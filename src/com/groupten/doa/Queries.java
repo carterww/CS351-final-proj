@@ -1,5 +1,6 @@
 package com.groupten.doa;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,10 +17,63 @@ public class Queries {
         dbCon = new DatabaseConnection(url, user, pass);
     }
 
+    public static ResultSet genRepReport() {
+        if (!connected()) return null;
+
+        String genReport = "SELECT COUNT(*) AS RepresentedCustomers, " +
+                "AVG(Balance) AS AverageCustomerBalance, CONCAT(FirstName, \' \', LastName) AS NAME " +
+                "FROM REP INNER JOIN CUSTOMER ON Customer.RepNum = Rep.RepNum " +
+                "GROUP BY Rep.RepNum;";
+        Statement genReportStat = null;
+        ResultSet res = null;
+        try { genReportStat = dbCon.getConnection().createStatement(); }
+        catch (SQLException e) {
+            printException(e, "create statement");
+        }
+
+        try { res = genReportStat.executeQuery(genReport); }
+        catch (SQLException e) {
+            printException(e, "execute statement");
+        }
+
+        return res;
+    }
+
+    public static ResultSet genTotalQuotedPrice(String customerName) {
+        if (!connected()) return null;
+
+        String genReport = "SELECT SUM(QuotedPrice), CustomerName FROM OrderLine INNER JOIN Orders ON " +
+                "Orders.OrderNum = OrderLine.OrderNum " +
+                "INNER JOIN Customer ON Customer.CustomerNum = Orders.CustomerNum " +
+                "WHERE Customer.CustomerName = ?;";
+
+        PreparedStatement genReportStat = null;
+        ResultSet res = null;
+        try { genReportStat = dbCon.getConnection().prepareStatement(genReport); }
+        catch (SQLException e) {
+            printException(e, "initialize the prepared statement");
+        }
+
+        if (genReportStat != null) {
+            try {
+                genReportStat.setString(1, customerName);
+            } catch (SQLException e) {
+                printException(e, "set parameter");
+            }
+
+            try {
+                res = genReportStat.executeQuery();
+            }  catch (SQLException e) {
+                printException(e, "execute statement");
+            }
+        }
+        return res;
+    }
+
     public static void updateCreditLimit(String customerName, BigDecimal newLimit) {
         if (!connected()) return;
 
-        String updateLimit = "Update Customer SET CreditLimit = ? WHERE CustomerName = ?";
+        String updateLimit = "Update Customer SET CreditLimit = ? WHERE CustomerName = ?;";
 
         PreparedStatement limitPreparedStatement = null;
         try { limitPreparedStatement = dbCon.getConnection().prepareStatement(updateLimit); }
@@ -54,7 +108,7 @@ public class Queries {
 
         String insertRep = "INSERT INTO Rep (RepNum, LastName, FirstName, Street, City, State, PostalCode," +
                             "Commission, Rate)" +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         PreparedStatement repPreparedStatement = null;
         try { repPreparedStatement = dbCon.getConnection().prepareStatement(insertRep); }
         catch (SQLException e) {
