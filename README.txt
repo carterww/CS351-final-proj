@@ -5,8 +5,17 @@ By: Ali Al-Raisi
     Jacob (Jake) Ogorek
     Ashlyn Thrift
         
-USERNAME : root 
-PASSWORD : password
+USERNAME : 'rafaelcampos'
+PASSWORD : raflol
+
+USERNAME : 'megangradey'
+PASSWORD : meglol
+
+USERNAME : 'huitian'
+PASSWORD : 'huilol'
+
+USERNAME : 'janetsefton'
+PASSWORD : 'janlol'
 
 System Requirements:
 Installation/Configuration: 

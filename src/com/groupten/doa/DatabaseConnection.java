@@ -11,7 +11,7 @@ public class DatabaseConnection {
         try {
             dbCon = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            System.out.println("Unable to connect to the database. " + e.getMessage());
+            System.out.println("Unable to login to the database. " + e.getMessage());
         }
     }
 

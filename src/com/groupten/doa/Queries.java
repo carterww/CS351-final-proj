@@ -1,8 +1,5 @@
 package com.groupten.doa;
 
-import javax.swing.plaf.nimbus.State;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -13,8 +10,40 @@ public class Queries {
     public static DatabaseConnection dbCon = null;
 
     // sets the connection so queries can be done
-    public static void setConnection(String url, String user, String pass) {
+    public static void login(String url, String user, String pass) {
         dbCon = new DatabaseConnection(url, user, pass);
+    }
+
+    private static void createUser(String username, String password) {
+        if (!connected()) return;
+
+        String createuser = "CREATE USER ?@\'localhost\' IDENTIFIED BY ?;";
+        String grantprivs = "GRANT ALL PRIVILEGES ON *.* TO ?@\'localhost\' WITH GRANT OPTION;";
+
+        PreparedStatement createUserSt = null;
+        PreparedStatement grantprivsSt = null;
+
+        try {
+            createUserSt = dbCon.getConnection().prepareStatement(createuser);
+            grantprivsSt = dbCon.getConnection().prepareStatement(grantprivs);
+        }  catch (SQLException e) {
+            printException(e, "create statements");
+        }
+
+        try {
+            createUserSt.setString(1, username);
+            createUserSt.setString(2, password);
+            grantprivsSt.setString(1, username);
+        }  catch (SQLException e) {
+            printException(e, "add parameters for creating user");
+        }
+
+        try {
+            createUserSt.execute();
+            grantprivsSt.execute();
+        } catch (SQLException e) {
+            printException(e, "create user and grant privileges");
+        }
     }
 
     public static ResultSet genRepReport() {
@@ -102,9 +131,10 @@ public class Queries {
     }
 
     // Adds a rep to the database, a lot of parameters
-    public static void addRep(String repNum, String lastName, String firstName, String street, String city,
+    public static void addRep(String repNum, String lastName, String firstName, String password, String street, String city,
                               String state, String postalCode, BigDecimal commission, BigDecimal rate) {
         if (!connected()) return;
+        boolean added = true;
 
         String insertRep = "INSERT INTO Rep (RepNum, LastName, FirstName, Street, City, State, PostalCode," +
                             "Commission, Rate)" +
@@ -113,6 +143,7 @@ public class Queries {
         try { repPreparedStatement = dbCon.getConnection().prepareStatement(insertRep); }
         catch (SQLException e) {
             printException(e, "initialize the prepared statement");
+            added = false;
         }
         if (repPreparedStatement != null) {
             try {
@@ -127,6 +158,7 @@ public class Queries {
                 repPreparedStatement.setBigDecimal(9, rate);
             } catch (SQLException e) {
                 printException(e, "add parameters to the prepared statement");
+                added = false;
             }
 
             try {
@@ -135,6 +167,11 @@ public class Queries {
             }
             catch (SQLException e) {
                 printException(e, "execute the prepared statement or close the statement");
+                added = false;
+            }
+
+            if (added) {
+                createUser((firstName + lastName).toLowerCase(), password);
             }
 
             System.out.printf("\nSuccessfully added %s to the Rep table.\n", (firstName + lastName));
