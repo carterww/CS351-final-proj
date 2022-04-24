@@ -14,7 +14,7 @@ public class Queries {
         dbCon = new DatabaseConnection(url, user, pass);
     }
 
-    private static void createUser(String username, String password) {
+    public static void createUser(String username, String password) {
         if (!connected()) return;
 
         String createuser = "CREATE USER ?@\'localhost\' IDENTIFIED BY ?;";
@@ -180,7 +180,7 @@ public class Queries {
     }
 
     // prints a message about why exception occurred
-    private static void printException(Exception e, String unable) {
+    public static void printException(Exception e, String unable) {
         System.out.println("Unable to " + unable + ". " + e.getMessage());
     }
 
