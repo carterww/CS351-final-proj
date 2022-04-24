@@ -1,10 +1,14 @@
 package com.groupten.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Scanner;
 import com.groupten.doa.Queries;
 
 public class Prompts {
+    public static String url = "jdbc:mysql://localhost:3306/";
+    public static String dbName = "project";
+
     private static Scanner stdin = new Scanner(System.in);
 
     public static char promptMainOptions() {
@@ -23,42 +27,74 @@ public class Prompts {
             System.out.print(str);
         }
 
-        choice = stdin.next();
+        System.out.print("?: ");
+        choice = stdin.nextLine();
 
         return choice.charAt(0);
     }
 
-    public static void promptGetRep() {
+    public static String promptGetName() {
+        System.out.print("Enter the Customer's name: ");
+        return stdin.nextLine();
+    }
+
+    public static void promptUpdateLimit() {
+        System.out.print("Please enter the customer's name: ");
+        String name = stdin.nextLine();
+        System.out.print("Enter their new credit limit: ");
+        BigDecimal newLimit = stdin.nextBigDecimal();
+        stdin.nextLine();
+        Queries.updateCreditLimit(name, newLimit);
+    }
+
+    public static void promptAddRep() {
         String[] rep = new String[8];
         String pass;
         BigDecimal[] repInfoNums = new BigDecimal[2];
         System.out.println("Please enter some information about the representative that you would like to\nadd to the database.");
-        System.out.print("Representative number: ");
-        rep[0] = stdin.next();
-        System.out.print("Last name: ");
-        rep[1] = stdin.nextLine();
-        System.out.print("First name: ");
-        rep[2] = stdin.nextLine();
-        System.out.print("Street of address: ");
-        rep[4] = stdin.nextLine();
-        System.out.print("City: ");
-        rep[5] = stdin.nextLine();
-        System.out.print("State (two letter abbreviation): ");
-        rep[6] = stdin.next();
-        System.out.print("Postal Code: ");
-        rep[7] = stdin.next();
-        System.out.print("Commission received (0 if new): ");
-        repInfoNums[0] = stdin.nextBigDecimal();
-        stdin.next();
-        System.out.print("Commission rate: ");
-        repInfoNums[1] = stdin.nextBigDecimal();
-        stdin.next();
+        helpCheckParam("Representative\'s number: ", 0,2, rep);
+        helpCheckParam("Last Name: ", 1, 15, rep);
+        helpCheckParam("First Name: ", 2, 15, rep);
+        helpCheckParam("Street of Address: ", 4, 15, rep);
+        helpCheckParam("City: ", 5, 15, rep);
+        helpCheckParam("State (two letter): ", 6, 2, rep);
+        helpCheckParam("Postal Code: ", 7, 5, rep);
+        helpCheckParam("Commission received: ", 0, 7, repInfoNums);
+        helpCheckParam("Commission rate (0.xx): ", 1, 3, repInfoNums);
+        helpCheckParam("Password: ", 3, 16, rep);
 
-        System.out.print("Password: ");
-        rep[3] = stdin.next();
         System.out.print("Please confirm the password: ");
-        pass = stdin.next();
+        pass = stdin.nextLine();
+        while (!pass.equals(rep[3])) {
+            helpCheckParam("Password: ", 3, 16, rep);
+            System.out.print("Please confirm the password: ");
+            pass = stdin.nextLine();
+        }
+        Queries.addRep(rep[0], rep[1], rep[2], rep[3], rep[4],
+            rep[5], rep[6], rep[7], repInfoNums[0], repInfoNums[1]);
+    }
 
+    private static void helpCheckParam(String out, int index, int maxLength, String[] rep) {
+        boolean tooLong = false;
+        do {
+            if (tooLong) System.out.println("Too lengthy. Try again");
+            System.out.print(out);
+            rep[index] = stdin.nextLine();
+            tooLong = rep[index].length() > maxLength;
+        } while (rep[index] != null && tooLong);
+    }
+
+    private static void helpCheckParam(String out, int index, int maxLength, BigDecimal[] repInfoNums) {
+        BigDecimal tmp = null;
+        boolean tooLong = false;
+        do {
+            if (tooLong) System.out.println("Too lengthy. Try again");
+            System.out.print(out);
+            tmp = stdin.nextBigDecimal();
+            stdin.nextLine();
+            repInfoNums[index] = tmp.setScale(2, RoundingMode.CEILING);
+            tooLong = repInfoNums[index].precision() > maxLength;
+        } while (repInfoNums[index] != null && tooLong);
     }
 
     public static boolean promptLogin() {
@@ -70,10 +106,7 @@ public class Prompts {
         System.out.print("Password: ");
         password = stdin.nextLine();
 
-        Queries.login("jdbc:mysql://localhost:3306/FinalProject", username, password);
-
-        if (Queries.connected()) return true;
-        else return false;
+        return Queries.login(url + dbName, username, password);
     }
 
     public static void promptInvalidLogin() {

@@ -10,8 +10,13 @@ public class Queries {
     public static DatabaseConnection dbCon = null;
 
     // sets the connection so queries can be done
-    public static void login(String url, String user, String pass) {
-        dbCon = new DatabaseConnection(url, user, pass);
+    public static boolean login(String url, String user, String pass) {
+        try {
+            dbCon = new DatabaseConnection(url, user, pass);
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
     }
 
     public static void createUser(String username, String password) {
@@ -126,7 +131,7 @@ public class Queries {
                 printException(e, "execute the prepared statement or close the statement");
             }
 
-            System.out.printf("\nSuccessfully updated %s\'s credit limit to %.2f", customerName, newLimit.floatValue());
+            System.out.printf("\nSuccessfully updated %s\'s credit limit to %.2f\n", customerName, newLimit.floatValue());
         }
     }
 
@@ -174,7 +179,7 @@ public class Queries {
                 createUser((firstName + lastName).toLowerCase(), password);
             }
 
-            System.out.printf("\nSuccessfully added %s to the Rep table.\n", (firstName + lastName));
+            System.out.printf("\nSuccessfully added %s to the Rep table.\n", (firstName + " " + lastName));
 
         }
     }
