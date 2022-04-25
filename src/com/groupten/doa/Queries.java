@@ -23,6 +23,7 @@ public class Queries {
     public static void createUser(String username, String password) {
         if (!connected()) return;
 
+        startTransaction();
         String createuser = "CREATE USER ?@\'localhost\' IDENTIFIED BY ?;";
         String grantprivs = "GRANT ALL PRIVILEGES ON *.* TO ?@\'localhost\' WITH GRANT OPTION;";
 
@@ -50,6 +51,9 @@ public class Queries {
         } catch (SQLException e) {
             printException(e, "create user and grant privileges");
         }
+
+        commit();
+
     }
 
     public static ResultSet genRepReport() {
@@ -108,6 +112,7 @@ public class Queries {
     public static void updateCreditLimit(String customerName, BigDecimal newLimit) {
         if (!connected()) return;
 
+        startTransaction();
         String updateLimit = "Update Customer SET CreditLimit = ? WHERE CustomerName = ?;";
 
         PreparedStatement limitPreparedStatement = null;
@@ -132,6 +137,7 @@ public class Queries {
                 printException(e, "execute the prepared statement or close the statement");
             }
 
+            commit();
             System.out.printf("\nSuccessfully updated %s\'s credit limit to %.2f\n", customerName, newLimit.floatValue());
         }
     }
@@ -142,6 +148,7 @@ public class Queries {
         if (!connected()) return;
         boolean added = true;
 
+        startTransaction();
         String insertRep = "INSERT INTO Rep (RepNum, LastName, FirstName, Street, City, State, PostalCode," +
                             "Commission, Rate)" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -180,6 +187,7 @@ public class Queries {
                 createUser((firstName + lastName).toLowerCase(), password);
             }
 
+            commit();
             System.out.printf("\nSuccessfully added %s to the Rep table.\n", (firstName + " " + lastName));
 
         }
@@ -219,15 +227,49 @@ public class Queries {
 
     }
 
-    private static boolean custInDbHelp(ResultSet res) throws SQLException {
-        if (res == null) return false;
-        String name = "";
-
-        while (res.next()) {
-            name = res.getString(1);
+    private static boolean startTransaction() {
+        String s = "START TRANSACTION;";
+        Statement st = null;
+        try {
+            st = dbCon.getConnection().createStatement();
+        } catch (SQLException e) {
+            return false;
         }
 
-        if (name.equals("") || name == null) {
+        try {
+            return st.execute(s);
+        }  catch (SQLException e) {
+            printException(e, "start transaction");
+            return false;
+        }
+    }
+
+    private static boolean commit() {
+        String s = "COMMIT;";
+        Statement st = null;
+        try {
+            st = dbCon.getConnection().createStatement();
+        } catch (SQLException e) {
+            return false;
+        }
+
+        try {
+            return st.execute(s);
+        }  catch (SQLException e) {
+            printException(e, "commit transaction");
+            return false;
+        }
+    }
+
+    private static boolean custInDbHelp(ResultSet res) throws SQLException {
+        if (res == null) return false;
+        int count = 0;
+
+        while (res.next()) {
+            count++;
+        }
+
+        if (count < 1) {
             return false;
         }
         return true;

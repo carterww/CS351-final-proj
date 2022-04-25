@@ -9,7 +9,7 @@ import com.groupten.doa.Queries;
 
 public class Prompts {
 
-    private static Scanner stdin = new Scanner(System.in);
+    public static Scanner stdin = new Scanner(System.in);
 
     public static char promptMainOptions() {
         String[] options = new String[5];
@@ -42,7 +42,7 @@ public class Prompts {
         System.out.print("Please enter the customer's name: ");
         String name = stdin.nextLine();
         if (!Queries.custInDb(name)) {
-            System.out.println("That customer is not in the database.");
+            System.out.println("\nThat customer is not in the database.\n");
             return;
         }
         System.out.print("Enter their new credit limit: ");
@@ -74,8 +74,16 @@ public class Prompts {
             System.out.print("Please confirm the password: ");
             pass = stdin.nextLine();
         }
-        Queries.addRep(rep[0], rep[1], rep[2], rep[3], rep[4],
-            rep[5], rep[6], rep[7], repInfoNums[0], repInfoNums[1]);
+
+        System.out.print("Are you sure you would like to add them as a representative? (Y/N): ");
+        String confirm = stdin.nextLine();
+
+        if (confirm.charAt(0) == 'Y' || confirm.charAt(0) == 'y') {
+            Queries.addRep(rep[0], rep[1], rep[2], rep[3], rep[4],
+                    rep[5], rep[6], rep[7], repInfoNums[0], repInfoNums[1]);
+        }  else {
+            System.out.println("\nThey were not added to the database.\n");
+        }
     }
 
     private static void helpCheckParam(String out, int index, int maxLength, String[] rep) {

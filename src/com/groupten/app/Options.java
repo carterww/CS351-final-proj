@@ -17,6 +17,11 @@ public class Options {
     }
 
     public static void option2(String custName) {
+        if (!Queries.custInDb(custName)) {
+            System.out.println("\nThat customer is not in the database.\n");
+            return;
+        }
+
         try {
             PrintReports.priceReport(Queries.genTotalQuotedPrice(custName));
         } catch (SQLException e) {
