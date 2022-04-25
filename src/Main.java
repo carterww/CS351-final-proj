@@ -18,30 +18,34 @@ public class Main {
         } while (succLogin == false);
         Prompts.promptValidLogin();
         do {
-            choice = Prompts.promptMainOptions();
-            switch (choice) {
-                case '1':
-                    Options.option1();
-                    System.out.print("Type anything to continue: ");
-                    stdin.nextLine();
-                    break;
-                case '2':
-                    Options.option2(Prompts.promptGetName());
-                    System.out.print("Type anything to continue: ");
-                    stdin.nextLine();
-                    break;
-                case '3':
-                    Options.option3();
-                    break;
-                case '4':
-                    Options.option4();
-                    break;
-                case '5':
-                    Options.option5();
-                default:
-                    keepGoing = false;
-                    System.out.println("bye");
-                    break;
+            try {
+                choice = Prompts.promptMainOptions();
+                switch (choice) {
+                    case '1':
+                        Options.option1();
+                        System.out.print("Type anything to continue: ");
+                        stdin.nextLine();
+                        break;
+                    case '2':
+                        Options.option2(Prompts.promptGetName());
+                        System.out.print("Type anything to continue: ");
+                        stdin.nextLine();
+                        break;
+                    case '3':
+                        Options.option3();
+                        break;
+                    case '4':
+                        Options.option4();
+                        break;
+                    case '5':
+                        Options.option5();
+                    default:
+                        keepGoing = false;
+                        System.out.println("bye");
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("There seemed to be an error.");
             }
         } while (keepGoing == true);
 

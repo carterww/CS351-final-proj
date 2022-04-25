@@ -3,11 +3,11 @@ package com.groupten.io;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Scanner;
+
+import com.groupten.data.DependentVars;
 import com.groupten.doa.Queries;
 
 public class Prompts {
-    public static String url = "jdbc:mysql://localhost:3306/";
-    public static String dbName = "project";
 
     private static Scanner stdin = new Scanner(System.in);
 
@@ -41,6 +41,10 @@ public class Prompts {
     public static void promptUpdateLimit() {
         System.out.print("Please enter the customer's name: ");
         String name = stdin.nextLine();
+        if (!Queries.custInDb(name)) {
+            System.out.println("That customer is not in the database.");
+            return;
+        }
         System.out.print("Enter their new credit limit: ");
         BigDecimal newLimit = stdin.nextBigDecimal();
         stdin.nextLine();
@@ -106,7 +110,7 @@ public class Prompts {
         System.out.print("Password: ");
         password = stdin.nextLine();
 
-        return Queries.login(url + dbName, username, password);
+        return Queries.login(DependentVars.url +DependentVars.dbName, username, password);
     }
 
     public static void promptInvalidLogin() {

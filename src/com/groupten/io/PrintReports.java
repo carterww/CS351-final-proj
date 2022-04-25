@@ -15,14 +15,19 @@ public class PrintReports {
         str.append("-------------------------------------------------------------------------------------------\n");
         str.append(String.format("%26s %30s %30s\n", "Representative's name", "Average Customer Balance", "Represented Customers"));
 
-        String tempName = "", tempBal = "", tempRep = "";
+        String tempName = "", tempRep = "";
+        BigDecimal tempBal;
         while (res.next()) {
             tempName = res.getString(3);
-            tempBal = res.getBigDecimal(2).floatValue() + "";
+            tempBal = res.getBigDecimal(2);
             tempRep = res.getInt(1) + "";
 
             str.append(String.format("%26s", tempName));
-            str.append(String.format("%30s", tempBal));
+            if (tempBal != null) {
+                str.append(String.format("%30s", tempBal.floatValue() + ""));
+            }  else {
+                str.append(String.format("%30s", ""));
+            }
             str.append(String.format("%30s\n", tempRep));
         }
 

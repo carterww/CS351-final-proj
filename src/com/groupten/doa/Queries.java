@@ -1,5 +1,6 @@
 package com.groupten.doa;
 
+import javax.xml.transform.Result;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -187,6 +188,49 @@ public class Queries {
     // prints a message about why exception occurred
     public static void printException(Exception e, String unable) {
         System.out.println("Unable to " + unable + ". " + e.getMessage());
+    }
+
+    public static boolean custInDb(String name) {
+        if (!connected()) return false;
+
+        String st = "SELECT CustomerName FROM Customer WHERE CustomerName = ?";
+        PreparedStatement p = null;
+        ResultSet res = null;
+        try { p = dbCon.getConnection().prepareStatement(st); }
+        catch (SQLException e) {
+            printException(e, "prepare statement lol");
+        }
+
+        try {
+            p.setString(1, name);
+        }  catch (SQLException e) {
+            printException(e, "add customer's name as parameter");
+        }
+
+        try {
+            res = p.executeQuery();
+        }  catch (SQLException e) {
+            printException(e, "execute customer lookup");
+        }
+        try {return custInDbHelp(res); }
+        catch (SQLException e) {
+            return false;
+        }
+
+    }
+
+    private static boolean custInDbHelp(ResultSet res) throws SQLException {
+        if (res == null) return false;
+        String name = "";
+
+        while (res.next()) {
+            name = res.getString(1);
+        }
+
+        if (name.equals("") || name == null) {
+            return false;
+        }
+        return true;
     }
 
     // returns true if database is connected
