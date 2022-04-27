@@ -4,5 +4,5 @@ package com.groupten.data;
 // you should change these to your database url and name
 public class DependentVars {
     public static String url = "jdbc:mysql://localhost:3306/";
-    public static String dbName = "FinalProject";
+    public static String dbName = "groupten";
 }

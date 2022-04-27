@@ -96,7 +96,7 @@ public class Prompts {
         if (answer == 'Y' || answer == 'y') {
             Queries.addRep(rep[0], rep[1], rep[2], rep[3], rep[4],
                     rep[5], rep[6], rep[7], repInfoNums[0], repInfoNums[1]);
-            System.out.printf("Added %s %s to the database\n", rep[2], rep[1]);
+            System.out.printf("Their username will be: %s%s%s\n", rep[2], rep[1], rep[0]);
         }  else {
             System.out.println("They were not added.");
         }
