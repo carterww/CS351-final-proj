@@ -1,6 +1,9 @@
 import com.groupten.app.Options;
+import com.groupten.doa.Queries;
+import com.groupten.io.PrintReports;
 import com.groupten.io.Prompts;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -44,7 +47,8 @@ public class Main {
                         break;
                 }
             } catch (Exception e) {
-                System.out.println("There seemed to be an error.");
+                System.out.println("There seemed to be an error. Terminating!");
+                Options.option5();
             }
         } while (keepGoing == true);
     }

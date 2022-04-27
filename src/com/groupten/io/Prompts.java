@@ -2,15 +2,20 @@ package com.groupten.io;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import com.groupten.data.DependentVars;
+import com.groupten.doa.DatabaseConnection;
 import com.groupten.doa.Queries;
 
+// class that holds all user interaction text/input fetching
 public class Prompts {
 
     public static Scanner stdin = new Scanner(System.in);
 
+    // returns the user's option char # and prints these options
+    // this is the "meat" of the menu
     public static char promptMainOptions() {
         String[] options = new String[5];
         String choice = "5";
@@ -33,11 +38,13 @@ public class Prompts {
         return choice.charAt(0);
     }
 
+    // gets a string but used for getting the customer's name for db queries
     public static String promptGetName() {
         System.out.print("Enter the Customer's name: ");
         return stdin.nextLine();
     }
 
+    // asks user for information that allows the customer's credit limit to be changed
     public static void promptUpdateLimit() {
         System.out.print("Please enter the customer's name: ");
         String name = stdin.nextLine();
@@ -51,11 +58,15 @@ public class Prompts {
         Queries.updateCreditLimit(name, newLimit);
     }
 
+    // asks user for information that allows a representative to be added to the rep table
     public static void promptAddRep() {
         String[] rep = new String[8];
         String pass;
         BigDecimal[] repInfoNums = new BigDecimal[2];
+
         System.out.println("Please enter some information about the representative that you would like to\nadd to the database.");
+
+        // getting information and putting into arrays
         helpCheckParam("Representative\'s number: ", 0,2, rep);
         helpCheckParam("Last Name: ", 1, 15, rep);
         helpCheckParam("First Name: ", 2, 15, rep);
@@ -67,6 +78,7 @@ public class Prompts {
         helpCheckParam("Commission rate (0.xx): ", 1, 3, repInfoNums);
         helpCheckParam("Password: ", 3, 16, rep);
 
+        // gets the password for user login
         System.out.print("Please confirm the password: ");
         pass = stdin.nextLine();
         while (!pass.equals(rep[3])) {
@@ -75,49 +87,61 @@ public class Prompts {
             pass = stdin.nextLine();
         }
 
-        System.out.print("Are you sure you would like to add them as a representative? (Y/N): ");
-        String confirm = stdin.nextLine();
+        // prints out all rep information to confirm if want add
+        PrintReports.rep(rep, repInfoNums);
+        System.out.print("Would you like to add them to the database? (Y/N): ");
+        char answer = stdin.nextLine().charAt(0);
 
-        if (confirm.charAt(0) == 'Y' || confirm.charAt(0) == 'y') {
+        // if user inputs y, rep gets added, otherwise all info gets thrown away
+        if (answer == 'Y' || answer == 'y') {
             Queries.addRep(rep[0], rep[1], rep[2], rep[3], rep[4],
                     rep[5], rep[6], rep[7], repInfoNums[0], repInfoNums[1]);
+            System.out.printf("Added %s %s to the database\n", rep[2], rep[1]);
         }  else {
-            System.out.println("\nThey were not added to the database.\n");
+            System.out.println("They were not added.");
         }
     }
 
+    // gets user input, checks if string is too long, and adds to array
     private static void helpCheckParam(String out, int index, int maxLength, String[] rep) {
         boolean tooLong = false;
         do {
             if (tooLong) System.out.println("Too lengthy. Try again");
+
             System.out.print(out);
             rep[index] = stdin.nextLine();
             tooLong = rep[index].length() > maxLength;
         } while (rep[index] != null && tooLong);
     }
 
+    // gets user input, checks if bigdecimal is too big and sets scale to 2, and adds to array
     private static void helpCheckParam(String out, int index, int maxLength, BigDecimal[] repInfoNums) {
         BigDecimal tmp = null;
         boolean tooLong = false;
+
         do {
             if (tooLong) System.out.println("Too lengthy. Try again");
+
             System.out.print(out);
             tmp = stdin.nextBigDecimal();
             stdin.nextLine();
-            repInfoNums[index] = tmp.setScale(2, RoundingMode.CEILING);
-            tooLong = repInfoNums[index].precision() > maxLength;
+            repInfoNums[index] = tmp.setScale(2, RoundingMode.CEILING); // sets to 2 decimal places
+            tooLong = repInfoNums[index].precision() > maxLength; // checks if number is too big
         } while (repInfoNums[index] != null && tooLong);
     }
 
+    // gets username and password from user
     public static boolean promptLogin() {
         String username, password;
 
         System.out.println("Please login, (if unsure of username or password, check README.txt)");
         System.out.print("Username: ");
         username = stdin.nextLine();
+
         System.out.print("Password: ");
         password = stdin.nextLine();
 
+        // login to database and returns false if login failed
         return Queries.login(DependentVars.url +DependentVars.dbName, username, password);
     }
 

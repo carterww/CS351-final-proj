@@ -6,8 +6,10 @@ import com.groupten.io.Prompts;
 
 import java.sql.SQLException;
 
+// class that links all packages / classes together
 public class Options {
 
+    // generate representative report
     public static void option1() {
         try {
             PrintReports.repReport(Queries.genRepReport());
@@ -16,6 +18,7 @@ public class Options {
         }
     }
 
+    // generates price report about customer
     public static void option2(String custName) {
         if (!Queries.custInDb(custName)) {
             System.out.println("\nThat customer is not in the database.\n");
@@ -29,13 +32,17 @@ public class Options {
         }
     }
 
+    // adds representative to db
     public static void option3() {
         Prompts.promptAddRep();
     }
+
+    // updates limit of customer
     public static void option4() {
         Prompts.promptUpdateLimit();
     }
 
+    // closes the program by closing connection and scanner
     public static void option5() {
         Prompts.close();
         Queries.closeConnection();

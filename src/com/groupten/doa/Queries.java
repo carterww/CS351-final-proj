@@ -1,12 +1,13 @@
 package com.groupten.doa;
 
 import javax.xml.transform.Result;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.math.BigDecimal;
 
+/* Class to hold all the database queries
+   the class is static so no need to instantiate it, instead use the login() function
+   to create a connection.
+*/
 public class Queries {
     public static DatabaseConnection dbCon = null;
 
@@ -23,7 +24,7 @@ public class Queries {
     public static void createUser(String username, String password) {
         if (!connected()) return;
 
-        startTransaction();
+        // adds a user to the database and gives them full priv
         String createuser = "CREATE USER ?@\'localhost\' IDENTIFIED BY ?;";
         String grantprivs = "GRANT ALL PRIVILEGES ON *.* TO ?@\'localhost\' WITH GRANT OPTION;";
 
@@ -48,17 +49,19 @@ public class Queries {
         try {
             createUserSt.execute();
             grantprivsSt.execute();
+            createUserSt.close();
+            grantprivsSt.close();
         } catch (SQLException e) {
             printException(e, "create user and grant privileges");
         }
-
-        commit();
 
     }
 
     public static ResultSet genRepReport() {
         if (!connected()) return null;
 
+        // generates table that counts number of customers a rep has, the avg balance of those customers
+        // and the rep's name
         String genReport = "SELECT COUNT(*) AS RepresentedCustomers, " +
                 "AVG(Balance) AS AverageCustomerBalance, CONCAT(FirstName, \' \', LastName) AS NAME " +
                 "FROM REP INNER JOIN CUSTOMER ON Customer.RepNum = Rep.RepNum " +
@@ -70,7 +73,9 @@ public class Queries {
             printException(e, "create statement");
         }
 
-        try { res = genReportStat.executeQuery(genReport); }
+        try {
+            res = genReportStat.executeQuery(genReport);
+        }
         catch (SQLException e) {
             printException(e, "execute statement");
         }
@@ -81,6 +86,8 @@ public class Queries {
     public static ResultSet genTotalQuotedPrice(String customerName) {
         if (!connected()) return null;
 
+        // generates table that contains a customer's total order price based on primary and foreign keys
+        // between orders, orderline, and customer table
         String genReport = "SELECT SUM(QuotedPrice), CustomerName FROM OrderLine INNER JOIN Orders ON " +
                 "Orders.OrderNum = OrderLine.OrderNum " +
                 "INNER JOIN Customer ON Customer.CustomerNum = Orders.CustomerNum " +
@@ -109,10 +116,11 @@ public class Queries {
         return res;
     }
 
+    // updates a customer's credit limit based on their name
     public static void updateCreditLimit(String customerName, BigDecimal newLimit) {
         if (!connected()) return;
 
-        startTransaction();
+        // update statement on customer table
         String updateLimit = "Update Customer SET CreditLimit = ? WHERE CustomerName = ?;";
 
         PreparedStatement limitPreparedStatement = null;
@@ -137,9 +145,25 @@ public class Queries {
                 printException(e, "execute the prepared statement or close the statement");
             }
 
-            commit();
             System.out.printf("\nSuccessfully updated %s\'s credit limit to %.2f\n", customerName, newLimit.floatValue());
         }
+    }
+
+    // returns resultset with all columns given repnum
+    public static ResultSet getRep(String repNum) {
+        if (!connected()) return null;
+
+        String getRep = "SELECT * FROM REP WHERE repnum = ?";
+
+        PreparedStatement p = null;
+        ResultSet res = null;
+        try {
+            p = dbCon.getConnection().prepareStatement(getRep);
+            p.setString(1, repNum);
+            res = p.executeQuery();
+        } catch (SQLException e) {
+        }
+        return res;
     }
 
     // Adds a rep to the database, a lot of parameters
@@ -148,7 +172,7 @@ public class Queries {
         if (!connected()) return;
         boolean added = true;
 
-        startTransaction();
+        // inserts a new row into rep and inserts every column value
         String insertRep = "INSERT INTO Rep (RepNum, LastName, FirstName, Street, City, State, PostalCode," +
                             "Commission, Rate)" +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -184,11 +208,8 @@ public class Queries {
             }
 
             if (added) {
-                createUser((firstName + lastName).toLowerCase(), password);
+                createUser((firstName + lastName + repNum).toLowerCase(), password);
             }
-
-            commit();
-            System.out.printf("\nSuccessfully added %s to the Rep table.\n", (firstName + " " + lastName));
 
         }
     }
@@ -198,6 +219,7 @@ public class Queries {
         System.out.println("Unable to " + unable + ". " + e.getMessage());
     }
 
+    // checks if a customer is in the db based on their name
     public static boolean custInDb(String name) {
         if (!connected()) return false;
 
@@ -227,42 +249,12 @@ public class Queries {
 
     }
 
-    private static boolean startTransaction() {
-        String s = "START TRANSACTION;";
-        Statement st = null;
-        try {
-            st = dbCon.getConnection().createStatement();
-        } catch (SQLException e) {
-            return false;
-        }
-
-        try {
-            return st.execute(s);
-        }  catch (SQLException e) {
-            printException(e, "start transaction");
-            return false;
-        }
-    }
-
-    private static boolean commit() {
-        String s = "COMMIT;";
-        Statement st = null;
-        try {
-            st = dbCon.getConnection().createStatement();
-        } catch (SQLException e) {
-            return false;
-        }
-
-        try {
-            return st.execute(s);
-        }  catch (SQLException e) {
-            printException(e, "commit transaction");
-            return false;
-        }
-    }
-
+    // checks if there is 1 row in result set at least
     private static boolean custInDbHelp(ResultSet res) throws SQLException {
-        if (res == null) return false;
+        if (res == null) {
+            res.close();
+            return false;
+        }
         int count = 0;
 
         while (res.next()) {
@@ -270,8 +262,10 @@ public class Queries {
         }
 
         if (count < 1) {
+            res.close();
             return false;
         }
+        res.close();
         return true;
     }
 

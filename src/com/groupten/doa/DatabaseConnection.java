@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+// wrapper class for database connection
 public class DatabaseConnection {
     private Connection dbCon;
 
