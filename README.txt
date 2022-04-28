@@ -27,17 +27,34 @@ The usernames, passwords, and privileges can be adjusted in the users.sql file, 
 
 System Requirements:
 Java SE 14 or newer (only tested on 14 and 15)
+MYSQL DBMS
 
 Installation/Configuration:
-Set url to database and database name in com.groupten.data.DependentVars to their respective values for the database
-being used. If you would like the existing users to be given privileges to login and do queries, use the database name
-'groupten.' Those users created in the dump will only be given access to that database.
 
-Also, our MYSQL database dump will be included in the resources folder, so it can be created to have the
-existing users and data in the database. To restore the database, create a new database named 'groupten.' Input the command
-'mysql -u [user] -p groupten < '[dir]\grouptendump.sql'' in a terminal or command prompt. Then to add the users with
-privileges on that database, run the same command, but with the users.sql file.That is all the setup required, now the
-main class in the src folder can be compiled and run. Or the application can be used to create an executable jar file.
+Creating the database:
+1) Create a new database in mySQL named 'groupten.'
+2) Use the database dump file, 'grouptendump.sql' to add the tables to the database you just created.
+   - This can be done in the terminal/cmd with the command mysql -u [user] -p groupten <"[dir]\grouptendump.sql"
+     where dir is the directory to the file.
+   - The terminal/cmd may have to be opened as an administrator and execute this as the root or root equivalent user.
+3) Now add the existing user's privileges by doing the same thing but with the 'users.sql' file but the database name
+   after -p can be left off. Here is how you can configure these users to your liking:
+   - If you would like to adjust the representative's username or password it can be done.
+   - '?'@'localhost' the ? represents the username in the CREATE USER statements so change that string.
+   - IDENTIFIED BY '?'; the ? represents the password in the CREATE USER statements so change that string.
+   - If you did not make the database name 'groupten' change the 'groupten' string every GRANT ALL PRIVILEGES ON groupten.*
+     to your database name.
+4) Now the database can be used for this application and the representatives can login.
 
-The ConnectorJ jar dependency is included in the libs folder, so there is no need to set the directory. If the ConnectorJ
-is not working, check the CS351FinalProject.iml file under <CLASSES> for the directory ConnectorJ is set to.
+Configuring the Java Application:
+1) Access the class: com.groupten.data.DependentVars and change the url and database name to their respective values
+   for your database.
+   - If the database name is not 'groupten' and the 'users.sql' file was not adjusted prior to execution, then the
+   'users.sql' file will not grant users priveleges and they cannot login.
+2) A classpath must be set to the connectorj.jar file located in the 'libs' folder. This can be done easily through an
+   IDE like Eclipse or IntelliJ (.iml file has classpath so if running in IntelliJ, this step shouldn't be required.
+   - Your IDE likely has a way to do this, so search how to add a classpath to a jar file for your IDE.
+   – If you are not using an IDE, and running through 'java' command in terminal, enter -classpath "..\libs\connectorj.jar;"
+     as an argument passed to java.
+   - For these reasons we recommend using IntelliJ because the classpath is already set in the .iml file provided.
+3)

@@ -18,6 +18,7 @@ public class Queries {
         try {
             dbCon = new DatabaseConnection(url, user, pass);
         } catch (SQLException e) {
+            printException(e, "login");
             return false;
         }
         return true;
