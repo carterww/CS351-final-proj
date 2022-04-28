@@ -65,8 +65,8 @@ public class Queries {
 
         // generates table that counts number of customers a rep has, the avg balance of those customers
         // and the rep's name
-        String genReport = "SELECT COUNT(*) AS RepresentedCustomers, " +
-                "AVG(Balance) AS AverageCustomerBalance, CONCAT(FirstName, \' \', LastName) AS NAME " +
+        String genReport = "SELECT COUNT(*), " +
+                "AVG(Balance), CONCAT(FirstName, \' \', LastName) " +
                 "FROM REP INNER JOIN CUSTOMER ON Customer.RepNum = Rep.RepNum " +
                 "GROUP BY Rep.RepNum;";
         Statement genReportStat = null;

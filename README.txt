@@ -56,5 +56,5 @@ Configuring the Java Application:
    - Your IDE likely has a way to do this, so search how to add a classpath to a jar file for your IDE.
    – If you are not using an IDE, and running through 'java' command in terminal, enter -classpath "..\libs\connectorj.jar;"
      as an argument passed to java.
-   - For these reasons we recommend using IntelliJ because the classpath is already set in the .iml file provided.
-3)
+   - For these reasons we recommend using IntelliJ and Eclipse because the classpath is already set in the .iml file provided.
+3) Run the Main class in 'com.groupten.app.Main' to start the application!
