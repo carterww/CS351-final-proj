@@ -64,9 +64,9 @@ public class Queries {
 
         // generates table that counts number of customers a rep has, the avg balance of those customers
         // and the rep's name
-        String genReport = "SELECT COUNT(*), " +
+        String genReport = "SELECT COUNT(customer.repnum), " +
                 "AVG(Balance), CONCAT(FirstName, \' \', LastName) " +
-                "FROM REP INNER JOIN CUSTOMER ON Customer.RepNum = Rep.RepNum " +
+                "FROM REP LEFT JOIN CUSTOMER ON Customer.RepNum = Rep.RepNum " +
                 "GROUP BY Rep.RepNum;";
         Statement genReportStat = null;
         ResultSet res = null;
@@ -92,7 +92,7 @@ public class Queries {
         // between orders, orderline, and customer table
         String genReport = "SELECT SUM(QuotedPrice), CustomerName FROM OrderLine INNER JOIN Orders ON " +
                 "Orders.OrderNum = OrderLine.OrderNum " +
-                "INNER JOIN Customer ON Customer.CustomerNum = Orders.CustomerNum " +
+                "RIGHT JOIN Customer ON Customer.CustomerNum = Orders.CustomerNum " +
                 "WHERE Customer.CustomerName = ?;";
 
         PreparedStatement genReportStat = null;

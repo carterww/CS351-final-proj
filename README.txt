@@ -29,27 +29,26 @@ System Requirements:
 Java SE 14 or newer (only tested on 14 and 15)
 MYSQL DBMS
 Java IDE or Shell/Terminal/Command Prompt (however you prefer to run Java programs)
+  - For IDE we recommend IntelliJ or Eclipse
 
 Installation/Configuration:
 
 Creating the database:
-1) Use the database dump file, 'grouptendump.sql' to add the tables.
-   - This can be done in the terminal/cmd with the command mysql -u [user] -p groupten <"[dir]\grouptendump.sql"
-     where dir is the directory to the file.
-   - The terminal/cmd may have to be opened as an administrator and execute this as the root or root equivalent user.
-   - This can be done in MYSQL workbench also by running the .sql files after creating and using the database (USE groupten;)
-2) Now add the existing user's privileges by doing the same thing but with the 'users.sql' file but the database name
-   after -p can be left off. Here is how you can configure these users to your liking:
-   - If you would like to adjust the representative's username or password it can be done.
-   - '?'@'localhost' the ? represents the username in the CREATE USER statements so change that string.
-   - IDENTIFIED BY '?'; the ? represents the password in the CREATE USER statements so change that string.
-3) Now the database can be used for this application and the representatives can login and execute the queries.
+1) In mySQL workbench: Import/Open the database dump file, 'grouptendump.sql' and run it to add the tables to your database.
+	- This defaults the database name to 'groupten' as well.
+	- Located in the 'resources' folder
+2) Similarly, import/open the 'users.sql' file in mySQL workbench to import the user privileges.
+	- Located in the 'resources' folder
+3) Now the database can be used for this application. If implemented correctly, representatives will be able to login and
+   execute queries as well as the application being able to access the tables.
+
 
 Configuring the Java Application:
-1) Access the class: com.groupten.data.DependentVars and change the url and database name to their respective values
-   for your database.
-   - If the database name is not 'groupten' and the 'users.sql' file was not adjusted prior to execution, then the
-   'users.sql' file will not grant users priveleges and they cannot login.
+** Import the extracted zip into the IDE you are using.
+1) Access the class: src/com.groupten/data/DependentVars and change the url and database name to their respective values for your database.
+   - 'groupten' is default in our program but can be changed...
+   - If the database name is not 'groupten' and the 'users.sql' file was not adjusted prior to execution, then the 'users.sql' file will not grant users priveleges and they cannot login.
+
 2) A classpath must be set to the connectorj.jar file located in the 'lib' folder. This can be done easily through an
    IDE like Eclipse or IntelliJ (.iml file has classpath so if running in IntelliJ, this step shouldn't be required.
    - See https://www.geeksforgeeks.org/how-to-add-jar-file-to-classpath-in-java/ for more information
@@ -57,7 +56,7 @@ Configuring the Java Application:
    – If you are not using an IDE, and running through 'java' command in terminal, enter -classpath "..\libs\connectorj.jar;"
      as an argument.
    - For these reasons we recommend using IntelliJ and Eclipse because the classpath is already set in the .iml file provided.
-3) Run the Main class in 'com.groupten.app.Main' to start the application!
+3) Run the Main class in 'src/com.groupten/app/Main' to start the application!
 
 Common Problems:
 If setup is done incorrectly, these are some common issues and fixes.

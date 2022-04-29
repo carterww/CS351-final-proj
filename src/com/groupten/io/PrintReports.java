@@ -51,7 +51,7 @@ public class PrintReports {
             if (tempBal != null) {
                 str.append(String.format("%30s", tempBal.floatValue() + ""));
             }  else {
-                str.append(String.format("%30s", ""));
+                str.append(String.format("%30s", "0"));
             }
             str.append(String.format("%30s\n", tempRep));
         }
@@ -82,6 +82,9 @@ public class PrintReports {
             if (tempName != null && tempQuote != null) {
                 str.append(String.format("%26s", tempName));
                 str.append(String.format("%26s\n", tempQuote.floatValue() + ""));
+            }  else if (tempName != null && tempQuote == null) {
+                str.append(String.format("%26s", tempName));
+                str.append(String.format("%26s\n", "0"));
             }
         }
 
