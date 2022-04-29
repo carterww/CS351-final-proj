@@ -1,11 +1,7 @@
 package com.groupten.app;
 
-import com.groupten.app.Options;
-import com.groupten.doa.Queries;
-import com.groupten.io.PrintReports;
 import com.groupten.io.Prompts;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {

@@ -2,7 +2,6 @@ package com.groupten.io;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 import com.groupten.data.DependentVars;
