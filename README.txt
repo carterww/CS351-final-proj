@@ -28,21 +28,22 @@ The usernames, passwords, and privileges can be adjusted in the users.sql file, 
 System Requirements:
 Java SE 14 or newer (only tested on 14 and 15)
 MYSQL DBMS
+Java IDE or Shell/Terminal/Command Prompt (however you prefer to run Java programs)
 
 Installation/Configuration:
 
 Creating the database:
-1) Create a new database in mySQL named 'groupten.'
-2) Use the database dump file, 'grouptendump.sql' to add the tables to the database you just created.
+1) Use the database dump file, 'grouptendump.sql' to add the tables.
    - This can be done in the terminal/cmd with the command mysql -u [user] -p groupten <"[dir]\grouptendump.sql"
      where dir is the directory to the file.
    - The terminal/cmd may have to be opened as an administrator and execute this as the root or root equivalent user.
-3) Now add the existing user's privileges by doing the same thing but with the 'users.sql' file but the database name
+   - This can be done in MYSQL workbench also by running the .sql files after creating and using the database (USE groupten;)
+2) Now add the existing user's privileges by doing the same thing but with the 'users.sql' file but the database name
    after -p can be left off. Here is how you can configure these users to your liking:
    - If you would like to adjust the representative's username or password it can be done.
    - '?'@'localhost' the ? represents the username in the CREATE USER statements so change that string.
    - IDENTIFIED BY '?'; the ? represents the password in the CREATE USER statements so change that string.
-4) Now the database can be used for this application and the representatives can login and execute the queries.
+3) Now the database can be used for this application and the representatives can login and execute the queries.
 
 Configuring the Java Application:
 1) Access the class: com.groupten.data.DependentVars and change the url and database name to their respective values
