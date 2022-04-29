@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="connectorj">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/connectorj.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/connectorj.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

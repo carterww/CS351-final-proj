@@ -2,7 +2,6 @@ package com.groupten.doa;
 
 import com.groupten.data.DependentVars;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.math.BigDecimal;
 
@@ -29,7 +28,7 @@ public class Queries {
 
         // adds a user to the database and gives them full priv
         String createuser = "CREATE USER ?@\'localhost\' IDENTIFIED BY ?;";
-        String grantprivs = "GRANT ALL PRIVILEGES ON " + DependentVars.dbName + ".* TO ?@\'localhost\' WITH GRANT OPTION;";
+        String grantprivs = "GRANT ALL PRIVILEGES ON *.* TO ?@\'localhost\' WITH GRANT OPTION;";
 
         PreparedStatement createUserSt = null;
         PreparedStatement grantprivsSt = null;
